@@ -1,3 +1,9 @@
+
 name = "command-collectif"
 main = "worker.js"
 compatibility_date = "2026-11-11"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "fos-command-db"
+database_id = "5debaede-a83f-4f65-ae82-fdef12453548"
