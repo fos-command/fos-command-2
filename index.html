@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+
+<html lang="fr">
+<head>
+<meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="#17243a" name="theme-color"/>
+<meta content="COMMAND — centre de coordination de l’alliance FOS." name="description"/>
+<link href="/manifest.webmanifest" rel="manifest"/>
+<link href="/icons/icon-192.png" rel="icon" sizes="192x192" type="image/png"/>
+<link href="/icons/icon-192.png" rel="apple-touch-icon"/>
+<title>COMMAND — V3.1</title>
+<style>
+:root{--bg:#101827;--panel:#1b2a40;--panel2:#263b55;--gold:#f3c76a;--ink:#f5f7fb;--muted:#b8c8da;--line:#40546e;--green:#83d6a5}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px system-ui,-apple-system,Segoe UI,sans-serif}
+header{padding:19px 16px 14px;background:linear-gradient(140deg,#17243a,#263d58);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;justify-content:space-between}.brand-tools{display:flex;align-items:center;gap:7px}.brand-tools select{width:auto;margin:0;padding:7px 8px;font-size:12px;border-radius:20px}.brand h1{margin:0;color:var(--gold);font-size:26px;letter-spacing:1.5px}.brand span{font-size:11px;border:1px solid #71839a;border-radius:20px;padding:6px 9px}
+header p{margin:5px 0 0;color:var(--muted);font-size:11px;letter-spacing:1.2px}
+main{max-width:760px;margin:auto;padding:14px}.hero,.panel{background:linear-gradient(120deg,#243a54,#1b2a40);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+.hero small{color:var(--gold);font-weight:700;letter-spacing:1px}.hero h2{margin:5px 0;font-size:20px}.muted{color:var(--muted);font-size:12px}
+nav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:12px 0}
+nav button,.btn{background:var(--panel);border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:10px 4px;font-weight:700}
+nav button{font-size:11px;min-height:58px}nav button b{display:block;font-size:19px;margin-bottom:3px}nav button.active,.btn.gold{background:var(--gold);color:#1a2638;border-color:var(--gold)}
+h3{color:var(--gold);font-size:13px;letter-spacing:.7px;text-transform:uppercase;margin:0 0 10px}
+.task{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:1px solid #344960}.task:first-of-type{border-top:0}.task input{width:20px;height:20px;accent-color:var(--green);flex:none}.task label{flex:1;line-height:1.35}.task small{display:block;color:var(--muted);font-size:12px;margin-top:3px}.task.done label{text-decoration:line-through;color:#9aaabd}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px}.pill{background:var(--gold);color:#17243a;padding:4px 8px;border-radius:20px;font-size:11px;font-weight:800}
+.progress{height:8px;background:#0d1521;border-radius:20px;overflow:hidden;margin-top:9px}.progress i{display:block;height:100%;background:var(--green);width:0}
+input[type=text],input[type=date],select,textarea{width:100%;background:#111d2d;color:var(--ink);border:1px solid var(--line);border-radius:9px;padding:10px;font:inherit;margin:5px 0}
+textarea{min-height:65px;resize:vertical}.btn{padding:9px 12px;margin:4px 3px 4px 0;cursor:pointer}
+.item{background:#21344c;border:1px solid #3b526d;border-radius:10px;padding:11px;margin:7px 0}.item strong{display:block}.item small{color:var(--muted)}
+.hidden{display:none!important}footer{text-align:center;color:#8194ab;font-size:11px;padding:16px}
+@media(max-width:420px){nav{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}nav button{font-size:12px;padding:11px 6px;min-height:62px}.brand h1{font-size:22px}.hero h2{font-size:18px}}
+@media(min-width:600px){main{padding:20px}}
+
+#authGate{max-width:520px;margin:10vh auto;padding:20px;background:linear-gradient(120deg,#243a54,#1b2a40);border:1px solid #40546e;border-radius:16px}
+#authGate h2{color:#f3c76a;margin-top:0}#authGate form{margin:14px 0;padding:12px;background:#17243a;border-radius:12px}
+#authGate label{display:block;font-size:12px;color:#b8c8da;margin-top:8px}#authGate input{width:100%;background:#111d2d;color:#f5f7fb;border:1px solid #40546e;border-radius:9px;padding:11px;font:inherit;margin:5px 0}
+#authGate button,#adminLink{background:#f3c76a;color:#17243a;border:0;border-radius:9px;padding:10px 13px;font-weight:800;text-decoration:none;display:inline-block;margin-top:8px}
+#authMessage{color:#f3c76a;min-height:20px;font-size:13px}body:not(.authenticated) header,body:not(.authenticated) main{display:none!important}
+#syncStatus{font-size:11px;color:#83d6a5;padding:0 14px 6px;max-width:760px;margin:auto}
+</style></head>
+<body>
+<section id="authGate">
+<h2>⚔ COMMAND — Accès sécurisé</h2>
+<p class="muted">Espace privé de coordination. Connecte-toi avec ton accès R4/R5.</p>
+<form id="loginForm">
+<h3>Connexion</h3>
+<label>Identifiant</label><input autocomplete="username" id="loginUser" required=""/>
+<label>Mot de passe</label><input autocomplete="current-password" id="loginPass" required="" type="password"/>
+<button type="submit">Se connecter</button>
+</form>
+<form hidden="" id="setupForm">
+<h3>Première installation — compte administrateur</h3>
+<p class="muted">À utiliser une seule fois, après avoir configuré la clé secrète COMMAND_SETUP_KEY dans Cloudflare.</p>
+<label>Clé d'installation Cloudflare</label><input autocomplete="off" id="setupKey" required="" type="password"/>
+<label>Identifiant administrateur</label><input autocomplete="username" id="setupUser" required=""/>
+<label>Nom affiché</label><input id="setupName" required=""/>
+<label>Mot de passe (12 caractères minimum)</label><input autocomplete="new-password" id="setupPass" minlength="12" required="" type="password"/>
+<button type="submit">Créer mon compte administrateur</button>
+</form>
+<div id="authMessage" role="status"></div>
+</section>
+<div id="syncStatus"></div>
+<header><div class="brand"><h1>⚔ COMMAND</h1><div class="brand-tools"><select aria-label="Language" id="languageSelect"><option value="fr">🇫🇷 FR</option><option value="en">🇬🇧 EN</option></select><span>R4 / R5</span></div></div><p>ALLIANCE MANAGEMENT SYSTEM • UNITED WE STAND</p><a hidden="" href="/admin" id="adminLink">Gestion des accès</a></header>
+<main>
+<div class="hero"><small>CENTRE DE COMMANDEMENT</small><h2>L’alliance se pilote. Elle ne s’improvise pas.</h2><div class="muted">Organisation • Coordination • Anticipation</div></div>
+<nav class="command-nav">
+<button class="active" data-tab="planning"><b>☑</b>PLANNING</button>
+<button data-tab="aow"><b>🏰</b>AOW</button>
+<button data-tab="ee"><b>⚔</b>EE</button>
+<button data-tab="ad"><b>🏆</b>AD</button>
+<button data-tab="team"><b>♟</b>MEMBRES</button>
+<button data-tab="nap"><b>🛡</b>NAP</button>
+<button data-tab="rankings"><b>📊</b>CLASSEMENTS</button>
+<button aria-label="Guerres" data-tab="wars"><b>🗺️</b>GUERRES</button>
+</nav>
+<section class="view" id="planning">
+<div class="panel"><div class="row"><h3>Checklist quotidienne</h3><span class="pill" id="dayLabel"></span></div>
+<select id="day"><option value="0">Lundi</option><option value="1">Mardi</option><option value="2">Mercredi</option><option value="3">Jeudi</option><option value="4">Vendredi</option><option value="5">Samedi</option><option value="6">Dimanche</option></select>
+<div class="row"><strong id="count">0 / 0 terminé</strong><span class="muted" id="pct">0 %</span></div><div class="progress"><i id="bar"></i></div></div>
+<div id="tasks"></div>
+<div class="panel"><h3>Transmission au R5</h3><textarea id="note" placeholder="Décisions, alertes, membres à suivre…"></textarea><button class="btn gold" id="saveNote">Enregistrer</button> <span class="muted" id="noteStatus"></span></div>
+<button class="btn" id="reset">Réinitialiser cette journée</button>
+</section>
+<section class="view hidden" id="team">
+<div class="panel"><h3>Responsables R4 / R5</h3><p class="muted">Répartition des missions et suivi de la coordination.</p><div id="roles"></div>
+<h3 style="margin-top:14px">Ajouter un responsable</h3><input id="person" placeholder="Nom du membre" type="text"/><input id="mission" placeholder="Responsabilité / mission" type="text"/><button class="btn gold" id="addPerson">Ajouter</button></div>
+<div class="panel"><h3>Contrôle d’équipe</h3><div id="teamChecks"></div></div>
+<div class="panel"><h3>Registre des membres</h3><p class="muted">Suivi manuel des membres FOS. Les données restent sur cet appareil.</p>
+<input id="memberName" placeholder="Nom du joueur" type="text"/>
+<div class="row"><input id="memberPco" placeholder="PCO (facultatif)" type="text"/><select id="memberStatus"><option>Actif</option><option>À suivre</option><option>Absent</option><option>En parcours</option></select></div>
+<input id="memberRole" placeholder="Rôle / remarque (facultatif)" type="text"/><button class="btn gold" id="addMember">Ajouter le membre</button><div id="memberList"></div></div>
+</section>
+<section class="view hidden" id="nap">
+<div class="panel"><h3>Registre des NAP</h3><p class="muted">Enregistre les accords et les contacts. Les prises de contact restent soumises aux consignes de la direction.</p>
+<input id="alliance" placeholder="Alliance concernée" type="text"/><input id="contact" placeholder="Contact / responsable" type="text"/><div class="row"><input id="start" type="date"/><input id="end" type="date"/></div>
+<select id="status"><option>À discuter</option><option>En attente</option><option>Actif</option><option>Terminé</option><option>Refusé</option></select><textarea id="conditions" placeholder="Conditions, horaires, pré-collecte, restrictions…"></textarea><button class="btn gold" id="addNap">Enregistrer l’accord</button></div><div id="napList"></div>
+</section>
+<section class="view hidden" id="aow">
+<div class="panel"><h3>Suivi AOW</h3><p class="muted">Préparation de l’adversaire, coordination, consignes et bilan. N’inscris que les informations confirmées.</p>
+<input id="aowName" placeholder="Adversaire / opération" type="text"/><div class="row"><input id="aowDate" type="date"/><input id="aowTime" placeholder="Heure GT" type="text"/></div>
+<div class="row"><input id="aowOwner" placeholder="Responsable" type="text"/><select id="aowStatus"><option>À préparer</option><option>Confirmé</option><option>En cours</option><option>Terminé</option></select></div>
+<textarea id="aowNotes" placeholder="Adversaire, NAP, règles, objectifs, consignes de direction…"></textarea><button class="btn gold" id="addAow">Enregistrer AOW</button></div>
+<div id="aowList"></div><div class="panel"><h3>Checklist AOW</h3><div id="aowChecks"></div></div>
+</section>
+<section class="view hidden" id="ee">
+<div class="panel"><h3>Suivi EE</h3><p class="muted">Préparation des équipes, horaires, présence et coordination.</p>
+<input id="eeName" placeholder="Nom de l’opération / adversaire" type="text"/><div class="row"><input id="eeDate" type="date"/><input id="eeTime" placeholder="Heure GT" type="text"/></div>
+<div class="row"><input id="eeOwner" placeholder="Responsable" type="text"/><select id="eeStatus"><option>À préparer</option><option>Confirmé</option><option>En cours</option><option>Terminé</option></select></div>
+<textarea id="eeNotes" placeholder="Équipes, transports, consignes, NAP, bulle, objectifs…"></textarea><button class="btn gold" id="addEe">Enregistrer EE</button></div>
+<div id="eeList"></div><div class="panel"><h3>Checklist EE</h3><div id="eeChecks"></div></div>
+</section>
+<section class="view hidden" id="ad">
+<div class="panel"><h3>Suivi AD</h3><p class="muted">Suivi des catégories, objectifs, résultats et récompenses.</p>
+<input id="adName" placeholder="Semaine / catégorie AD" type="text"/><div class="row"><input id="adDate" type="date"/><input id="adTarget" placeholder="Objectif / points" type="text"/></div>
+<div class="row"><input id="adOwner" placeholder="Responsable" type="text"/><select id="adStatus"><option>À préparer</option><option>En cours</option><option>Résultat confirmé</option><option>Terminé</option></select></div>
+<textarea id="adNotes" placeholder="Catégorie, consigne (push / coffres), classement, récompenses…"></textarea><button class="btn gold" id="addAd">Enregistrer AD</button></div>
+<div id="adList"></div><div class="panel"><h3>Checklist AD</h3><div id="adChecks"></div></div>
+</section>
+<section class="view hidden" id="rankings">
+<div class="panel"><h3>Classements FOS</h3><p class="muted">Saisie manuelle des résultats confirmés. Précise la période et la catégorie pour garder un historique clair.</p>
+<input id="rankPeriod" placeholder="Période (ex. semaine du 9 novembre)" type="text"/>
+<div class="row"><select id="rankCategory"><option>AD</option><option>EE</option><option>AOW</option><option>Activité générale</option><option>Contribution FOS</option></select><input id="rankPlayer" placeholder="Nom du joueur" type="text"/></div>
+<div class="row"><input id="rankPlace" min="1" placeholder="Rang" step="1" type="number"/><input id="rankScore" placeholder="Points / PCO" type="text"/></div>
+<textarea id="rankNotes" placeholder="Remarque / récompense / catégorie…"></textarea><button class="btn gold" id="addRank">Ajouter au classement</button></div>
+<div id="rankList"></div>
+</section>
+<section class="view hidden" id="wars">
+<div class="panel"><h3>Calendrier AD / AOW / EE</h3><p class="muted">Ajoute uniquement les horaires et consignes confirmés.</p>
+<input id="event" placeholder="Événement ou opération" type="text"/><div class="row"><input id="eventDate" type="date"/><input id="time" placeholder="Heure GT" type="text"/></div>
+<select id="type"><option>AD</option><option>AOW</option><option>EE</option><option>Dimension / territoire</option><option>NAP / diplomatie</option><option>Autre</option></select><textarea id="instructions" placeholder="Consignes, responsables, prises de villes, mines, bulle…"></textarea><button class="btn gold" id="addEvent">Ajouter au calendrier</button></div>
+<div id="eventList"></div><div class="panel"><h3>Vérifications avant événement</h3><div id="warChecks"></div></div>
+</section>
+<footer>COMMAND • Application locale • Données conservées dans ce navigateur</footer>
+</main>
+<script>
+window.COMMAND_READY=(async()=>{
+  const gate=document.getElementById('authGate');
+  const message=document.getElementById('authMessage');
+  const say=t=>{message.textContent=t||''};
+  async function jsonFetch(url,options={}){const r=await fetch(url,{credentials:'same-origin',...options});let j={};try{j=await r.json()}catch{};return {r,j};}
+  const me=await jsonFetch('/api/me');
+  if(me.r.ok){
+    document.body.classList.add('authenticated');gate.hidden=true;
+    if(me.j.user&&me.j.user.role==='admin')document.getElementById('adminLink').hidden=false;
+    const state=await jsonFetch('/api/data');
+    if(!state.r.ok){say('Impossible de charger les données. Recharge la page.');return {};}
+    const cfg=await jsonFetch('/api/settings');if(cfg.r.ok&&cfg.j.settings){const n=cfg.j.settings.allianceName||'ALLIANCE MANAGEMENT SYSTEM';const t=cfg.j.settings.allianceTag||'UNITED WE STAND';document.getElementById('allianceIdentity').textContent=n+' • '+t;}
+    return state.j.data||{};
+  }
+  const st=await jsonFetch('/api/status');
+  if(st.r.ok&&!st.j.initialized){document.getElementById('setupForm').hidden=false;document.getElementById('loginForm').hidden=true;}
+  else {document.getElementById('setupForm').hidden=true;document.getElementById('loginForm').hidden=false;}
+  gate.hidden=false;
+  document.getElementById('loginForm').addEventListener('submit',async e=>{
+    e.preventDefault();say('Connexion…');
+    const {r,j}=await jsonFetch('/api/login',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({username:loginUser.value,password:loginPass.value})});
+    if(r.ok)location.reload();else say(j.error||'Identifiant ou mot de passe incorrect.');
+  });
+  document.getElementById('setupForm').addEventListener('submit',async e=>{
+    e.preventDefault();say('Création du compte…');
+    const {r,j}=await jsonFetch('/api/bootstrap',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({setupKey:setupKey.value,username:setupUser.value,displayName:setupName.value,password:setupPass.value})});
+    if(r.ok)location.reload();else say(j.error||'Installation impossible. Vérifie la clé et les champs.');
+  });
+  return {};
+})();
+</script>
+<script>(async()=>{
+
+const KEY='command-shared-v1';let data=await window.COMMAND_READY;let lastSynced=JSON.parse(JSON.stringify(data||{}));let saveQueue=Promise.resolve();let pendingSave=false;
+function persist(){pendingSave=true;saveQueue=saveQueue.then(async()=>{if(!pendingSave)return;pendingSave=false;const patch={},deleted=[];for(const k of Object.keys(data)){if(JSON.stringify(data[k])!==JSON.stringify(lastSynced[k]))patch[k]=data[k];}for(const k of Object.keys(lastSynced)){if(!(k in data))deleted.push(k);}if(!Object.keys(patch).length&&!deleted.length)return;const r=await fetch('/api/data',{method:'PUT',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify({patch,deleted})});if(!r.ok){pendingSave=true;document.getElementById('syncStatus').textContent='⚠ Synchronisation en attente — vérifie ta connexion';return;}for(const [k,v] of Object.entries(patch))lastSynced[k]=JSON.parse(JSON.stringify(v));for(const k of deleted)delete lastSynced[k];document.getElementById('syncStatus').textContent='✓ Données partagées enregistrées';}).catch(()=>{pendingSave=true;document.getElementById('syncStatus').textContent='⚠ Synchronisation interrompue';setTimeout(()=>{pendingSave=true;persist();},4000);});}
+async function pullSharedData(){if(pendingSave)return;try{const r=await fetch('/api/data',{credentials:'same-origin'});if(!r.ok)return;const j=await r.json();const remote=j.data||{};if(JSON.stringify(remote)!==JSON.stringify(lastSynced)){data=remote;lastSynced=JSON.parse(JSON.stringify(remote));renderTasks();renderRoles();renderNaps();renderEvents();['aow','ee','ad'].forEach(renderOps);renderMembers();renderRanks();document.querySelectorAll('[data-sync-key]').forEach(cb=>{cb.checked=!!data[cb.dataset.syncKey];cb.closest('.task')?.classList.toggle('done',cb.checked);});if(document.activeElement!==note)note.value=data['note-'+day.value]||'';document.getElementById('syncStatus').textContent='✓ Données de l’équipe actualisées';}}catch{}}
+setInterval(pullSharedData,7000);
+const names=['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
+const common=[['Routine quotidienne',[
+['Lire les messages et annonces','Repérer les demandes importantes et les informations à relayer.'],
+['Faire le point sur les membres','Activité, absences, nouveaux, difficultés ou besoins.'],
+['Vérifier les événements du jour','Horaires, consignes de guerre, collecte et échéances.'],
+['Vérifier les consignes de guerre','Attaques, défense, territoire et règles particulières du jour.'],
+['Faire le point avec les responsables R4','Qui prend en charge quoi ? Qu’est-ce qui reste sans responsable ?'],
+['Transmettre les décisions et alertes au R5','Ne pas laisser une question importante sans retour.'],
+['Faire vivre FOS','Un message utile, positif ou mobilisateur dans le chat.']]]];
+const specific={
+1:[['Préparation AOW / adversaires',[
+['Vérifier les informations disponibles sur les adversaires','Confirmer les éléments connus et leur fiabilité.'],
+['Faire le point NAP et diplomatie','Qui contacte qui ? Respecter les consignes de la direction.'],
+['Préparer les consignes pour mercredi','Responsables, horaires, règles et message à diffuser.']]]],
+2:[['AOW / coordination',[
+['Confirmer les consignes et les rôles','S’assurer que les responsables ont relayé les informations.'],
+['Suivre les mouvements et les alertes','Faire remonter rapidement les problèmes au R5.']]]],
+3:[['Bilan et ajustements',[
+['Vérifier les résultats et les points en attente','Noter ce qui doit être corrigé ou anticipé.'],
+['Relancer les responsables R4','S’assurer que les actions annoncées ont été réalisées.']]]],
+4:[['Préparation du week-end',[
+['Anticiper les événements et consignes du week-end','Horaires, présence des responsables et rappels.']]]],
+5:[['Contrôle week-end',[
+['Vérifier les responsables de permanence','S’assurer que les consignes sont accessibles.']]]],
+6:[['Préparer la nouvelle semaine',[
+['Lister les priorités de la semaine prochaine','AD, AOW, EE, NAP, effectifs et décisions à prendre.']]]]
+};
+function safe(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function renderTasks(){let d=+day.value,root=document.getElementById('tasks');root.innerHTML='';let groups=[...common,...(specific[d]||[])],total=0,done=0;
+groups.forEach((g,gi)=>{let p=document.createElement('div');p.className='panel';p.innerHTML='<h3>'+safe(g[0])+'</h3>';g[1].forEach((t,ti)=>{total++;let id='t-'+d+'-'+gi+'-'+ti,checked=!!data[id];if(checked)done++;let row=document.createElement('div');row.className='task'+(checked?' done':'');let cb=document.createElement('input');cb.type='checkbox';cb.checked=checked;cb.onchange=()=>{data[id]=cb.checked;persist();renderTasks()};let label=document.createElement('label');label.innerHTML='<strong>'+safe(t[0])+'</strong><small>'+safe(t[1])+'</small>';row.append(cb,label);p.append(row)});root.append(p)});
+count.textContent=done+' / '+total+' terminé';pct.textContent=Math.round(done/total*100)+' %';bar.style.width=(done/total*100)+'%';dayLabel.textContent=names[d];note.value=data['note-'+d]||''}
+day.value=String((new Date().getDay()+6)%7);day.onchange=renderTasks;renderTasks();
+saveNote.onclick=()=>{data['note-'+day.value]=note.value;persist();noteStatus.textContent='Note enregistrée ✓'};
+reset.onclick=()=>{if(confirm('Effacer les coches de cette journée ?')){Object.keys(data).filter(k=>k.startsWith('t-'+day.value+'-')).forEach(k=>delete data[k]);persist();renderTasks()}};
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.view').forEach(v=>v.classList.toggle('hidden',v.id!==b.dataset.tab))});
+const defaultRoles=[['Toi','Coordination générale / suivi des actions R4-R5'],['Irina','Mission à confirmer avec Irina'],['Fear','Mission à confirmer avec Fear'],['Hope / DP','R5 à tour de rôle — coordination selon le planning'],['Autres R4','Mission à définir et à valider']];
+function renderRoles(){let root=document.getElementById('roles');root.innerHTML='';let roles=data.roles||defaultRoles;roles.forEach((r,i)=>{let el=document.createElement('div');el.className='item';el.innerHTML='<strong>'+safe(r[0])+'</strong><small>'+safe(r[1])+'</small><button class="btn" data-edit="'+i+'">Modifier</button> <button class="btn" data-del="'+i+'">Supprimer</button>';root.append(el)});root.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>{let r=roles[+b.dataset.edit],n=prompt('Nom',r[0]);if(n===null)return;let m=prompt('Mission',r[1]);if(m===null)return;r[0]=n;r[1]=m;data.roles=roles;persist();renderRoles()});root.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{roles.splice(+b.dataset.del,1);data.roles=roles;persist();renderRoles()})}
+addPerson.onclick=()=>{let n=person.value.trim(),m=mission.value.trim();if(!n||!m){alert('Renseigne le nom et la mission.');return}(data.roles||(data.roles=defaultRoles.slice())).push([n,m]);persist();person.value='';mission.value='';renderRoles()};
+function checklist(id,items){let root=document.getElementById(id);items.forEach((s,i)=>{let key=id+i,row=document.createElement('div');row.className='task';let cb=document.createElement('input');cb.type='checkbox';cb.dataset.syncKey=key;cb.checked=!!data[key];let l=document.createElement('label');l.textContent=s;if(cb.checked)row.classList.add('done');cb.onchange=()=>{data[key]=cb.checked;persist();row.classList.toggle('done',cb.checked)};row.append(cb,l);root.append(row)})}
+checklist('teamChecks',['Chaque responsable connaît sa mission','Chaque tâche a un responsable et une échéance','Absences et remplacements anticipés','Les informations importantes remontent au R5']);
+function renderNaps(){let root=document.getElementById('napList');root.innerHTML='<div class="panel"><h3>Accords enregistrés</h3></div>';let p=root.firstChild;(data.naps||[]).forEach((n,i)=>{let el=document.createElement('div');el.className='item';el.innerHTML='<div class="row"><strong>'+safe(n.a)+'</strong><span class="pill">'+safe(n.s)+'</span></div><small>Contact : '+safe(n.c||'—')+' • Du '+safe(n.a1||'—')+' au '+safe(n.a2||'—')+'</small><p class="muted">'+safe(n.d||'')+'</p><button class="btn" data-del="'+i+'">Supprimer</button>';p.append(el)});root.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{data.naps.splice(+b.dataset.del,1);persist();renderNaps()})}
+addNap.onclick=()=>{let a=alliance.value.trim();if(!a){alert('Indique le nom de l’alliance.');return}(data.naps||(data.naps=[])).push({a,c:contact.value,a1:start.value,a2:end.value,s:status.value,d:conditions.value});persist();['alliance','contact','start','end','conditions'].forEach(id=>document.getElementById(id).value='');renderNaps()};
+function renderEvents(){let root=document.getElementById('eventList');root.innerHTML='<div class="panel"><h3>Événements programmés</h3></div>';let p=root.firstChild;(data.events||[]).forEach((e,i)=>{let el=document.createElement('div');el.className='item';el.innerHTML='<div class="row"><strong>'+safe(e.n)+'</strong><span class="pill">'+safe(e.ty)+'</span></div><small>'+safe(e.dt||'Date à préciser')+' • '+safe(e.tm||'Heure à préciser')+'</small><p class="muted">'+safe(e.ins||'')+'</p><button class="btn" data-del="'+i+'">Supprimer</button>';p.append(el)});root.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{data.events.splice(+b.dataset.del,1);persist();renderEvents()})}
+addEvent.onclick=()=>{let n=event.value.trim();if(!n){alert('Indique le nom de l’événement.');return}(data.events||(data.events=[])).push({n,dt:eventDate.value,tm:time.value,ty:type.value,ins:instructions.value});persist();['event','eventDate','time','instructions'].forEach(id=>document.getElementById(id).value='');renderEvents()};
+checklist('warChecks',['Horaires et règles confirmés','Responsables désignés','Consignes relayées dans le jeu / Discord','NAP et restrictions vérifiés','Rappel de protection si nécessaire','Bilan prévu après l’événement']);
+
+// COMMAND expanded workspaces: AOW, EE, AD, roster and rankings.
+const opMeta={aow:{list:'aowList',prefix:'aow',title:'AOW'},ee:{list:'eeList',prefix:'ee',title:'EE'},ad:{list:'adList',prefix:'ad',title:'AD'}};
+function renderOps(kind){const meta=opMeta[kind],root=document.getElementById(meta.list);if(!root)return;root.innerHTML='<div class="panel"><h3>Historique '+meta.title+'</h3></div>';const p=root.firstChild;const rows=(data.ops||[]).map((x,i)=>({...x,_i:i})).filter(x=>x.kind===kind).sort((a,b)=>(a.date||'').localeCompare(b.date||''));if(!rows.length){p.insertAdjacentHTML('beforeend','<p class="muted">Aucune opération enregistrée pour le moment.</p>');return;}rows.forEach(x=>{const el=document.createElement('div');el.className='item';el.innerHTML='<div class="row"><strong>'+safe(x.name)+'</strong><span class="pill">'+safe(x.status||'—')+'</span></div><small>'+safe(x.date||'Date à préciser')+' • '+safe(x.time||'Heure à préciser')+(x.owner?' • '+safe(x.owner):'')+'</small><p class="muted">'+safe(x.target||'')+'</p><p class="muted">'+safe(x.notes||'')+'</p><button class="btn" data-opdel="'+x._i+'">Supprimer</button>';p.append(el)});root.querySelectorAll('[data-opdel]').forEach(b=>b.onclick=()=>{if(!confirm('Supprimer cette entrée ?'))return;data.ops.splice(+b.dataset.opdel,1);persist();renderOps(kind)})}
+function addOp(kind){const p=opMeta[kind].prefix,n=document.getElementById(p+'Name').value.trim();if(!n){alert('Indique le nom de l’opération.');return;}const entry={kind,name:n,date:document.getElementById(p+'Date').value,time:document.getElementById(p+'Time').value,owner:document.getElementById(p+'Owner').value,status:document.getElementById(p+'Status').value,notes:document.getElementById(p+'Notes').value,target:kind==='ad'?document.getElementById('adTarget').value:''};(data.ops||(data.ops=[])).push(entry);persist();[p+'Name',p+'Date',p+'Time',p+'Owner',p+'Notes'].forEach(id=>document.getElementById(id).value='');if(kind==='ad')document.getElementById('adTarget').value='';renderOps(kind)}
+addAow.onclick=()=>addOp('aow');addEe.onclick=()=>addOp('ee');addAd.onclick=()=>addOp('ad');
+checklist('aowChecks',['Adversaire et informations vérifiés','Règles et NAP confirmés','Responsables et rôles désignés','Consignes diffusées aux membres','Plan de suivi et bilan prévu']);
+checklist('eeChecks',['Horaires et règles EE confirmés','Participants et équipes vérifiés','Transports et consignes relayés','Protection hors ligne rappelée si nécessaire','Bilan et résultats transmis']);
+checklist('adChecks',['Catégorie et règle de la semaine confirmées','Consigne push / économie communiquée','Objectif et critères de classement expliqués','Résultats vérifiés avant attribution','Récompenses et ajustements annoncés']);
+function renderMembers(){const root=document.getElementById('memberList');if(!root)return;root.innerHTML='';(data.members||[]).forEach((m,i)=>{const el=document.createElement('div');el.className='item';el.innerHTML='<div class="row"><strong>'+safe(m.name)+'</strong><span class="pill">'+safe(m.status||'Actif')+'</span></div><small>'+(m.pco?'PCO : '+safe(m.pco)+' • ':'')+safe(m.role||'')+'</small><button class="btn" data-memberdel="'+i+'">Supprimer</button>';root.append(el)});root.querySelectorAll('[data-memberdel]').forEach(b=>b.onclick=()=>{if(!confirm('Supprimer ce membre du registre ?'))return;data.members.splice(+b.dataset.memberdel,1);persist();renderMembers()})}
+addMember.onclick=()=>{const name=memberName.value.trim();if(!name){alert('Indique le nom du joueur.');return;}(data.members||(data.members=[])).push({name,pco:memberPco.value.trim(),status:memberStatus.value,role:memberRole.value.trim()});persist();['memberName','memberPco','memberRole'].forEach(id=>document.getElementById(id).value='');renderMembers()};
+function renderRanks(){const root=document.getElementById('rankList');if(!root)return;root.innerHTML='<div class="panel"><h3>Résultats enregistrés</h3></div>';const p=root.firstChild;const rows=(data.rankings||[]).map((r,i)=>({...r,_i:i})).sort((a,b)=>(a.period||'').localeCompare(b.period||'')||(Number(a.place)||999)-(Number(b.place)||999));if(!rows.length){p.insertAdjacentHTML('beforeend','<p class="muted">Aucun résultat enregistré.</p>');return;}rows.forEach(r=>{const el=document.createElement('div');el.className='item';el.innerHTML='<div class="row"><strong>#'+safe(r.place||'—')+' • '+safe(r.player)+'</strong><span class="pill">'+safe(r.category)+'</span></div><small>'+safe(r.period||'Période non précisée')+' • '+safe(r.score||'Score non précisé')+'</small><p class="muted">'+safe(r.notes||'')+'</p><button class="btn" data-rankdel="'+r._i+'">Supprimer</button>';p.append(el)});root.querySelectorAll('[data-rankdel]').forEach(b=>b.onclick=()=>{if(!confirm('Supprimer cette ligne du classement ?'))return;data.rankings.splice(+b.dataset.rankdel,1);persist();renderRanks()})}
+addRank.onclick=()=>{const player=rankPlayer.value.trim(),period=rankPeriod.value.trim();if(!player){alert('Indique le nom du joueur.');return;}if(!period){alert('Indique la période du classement.');return;}(data.rankings||(data.rankings=[])).push({period,category:rankCategory.value,player,place:rankPlace.value,score:rankScore.value,notes:rankNotes.value});persist();['rankPlayer','rankPlace','rankScore','rankNotes'].forEach(id=>document.getElementById(id).value='');renderRanks()};
+['aow','ee','ad'].forEach(renderOps);renderMembers();renderRanks();
+
+renderRoles();renderNaps();renderEvents();
+
+})();</script>
+<script>
+// COMMAND bilingual interface. Alliance data storage remains untouched.
+(()=>{
+const translations={
+'ALLIANCE MANAGEMENT SYSTEM • UNITED WE STAND':'ALLIANCE MANAGEMENT SYSTEM • UNITED WE STAND','Langue':'Language','Nom':'Name','Mission':'Assignment',
+'CENTRE DE COMMANDEMENT':'COMMAND CENTER',
+'L’alliance se pilote. Elle ne s’improvise pas.':'An alliance is led. It does not run itself.',
+'Organisation • Coordination • Anticipation':'Organization • Coordination • Preparation',
+'PLANNING':'PLANNING','ÉQUIPE':'TEAM','GUERRES':'WARS',
+'Checklist quotidienne':'Daily checklist','Transmission au R5':'Report to R5',
+'Décisions, alertes, membres à suivre…':'Decisions, alerts, members to follow…',
+'Enregistrer':'Save','Réinitialiser cette journée':'Reset this day',
+'Répartition des responsabilités':'Responsibilities','Base à confirmer avec chaque responsable.':'Starting point to confirm with each officer.',
+'Ajouter un responsable':'Add an officer','Nom du membre':'Member name','Responsabilité / mission':'Responsibility / assignment','Ajouter':'Add',
+'Contrôle d’équipe':'Team check','Registre des NAP':'NAP register',
+'Enregistre les accords et les contacts. Les prises de contact restent soumises aux consignes de la direction.':'Record agreements and contacts. All outreach must follow leadership instructions.',
+'Alliance concernée':'Alliance','Contact / responsable':'Contact / officer','À discuter':'To discuss','En attente':'Pending','Actif':'Active','Terminé':'Completed','Refusé':'Declined',
+'Conditions, horaires, pré-collecte, restrictions…':'Conditions, timings, pre-gathering, restrictions…','Enregistrer l’accord':'Save agreement','Accords enregistrés':'Saved agreements',
+'Calendrier AD / AOW / EE':'AD / AOW / EE calendar','Ajoute uniquement les horaires et consignes confirmés.':'Only add confirmed timings and instructions.',
+'Événement ou opération':'Event or operation','Heure GT':'GT time','Dimension / territoire':'Dimension / territory','NAP / diplomatie':'NAP / diplomacy','Autre':'Other',
+'Consignes, responsables, prises de villes, mines, bulle…':'Instructions, officers, city captures, mines, shield…','Ajouter au calendrier':'Add to calendar','Événements programmés':'Scheduled events',
+'Vérifications avant événement':'Pre-event checks','COMMAND • Application locale • Données conservées dans ce navigateur':'COMMAND • Local app • Data saved in this browser',
+'Lundi':'Monday','Mardi':'Tuesday','Mercredi':'Wednesday','Jeudi':'Thursday','Vendredi':'Friday','Samedi':'Saturday','Dimanche':'Sunday',
+'Routine quotidienne':'Daily routine','Lire les messages et annonces':'Read messages and announcements','Repérer les demandes importantes et les informations à relayer.':'Identify important requests and information to pass on.',
+'Faire le point sur les membres':'Check in on members','Activité, absences, nouveaux, difficultés ou besoins.':'Activity, absences, new members, issues or needs.',
+'Vérifier les événements du jour':'Check today’s events','Horaires, consignes de guerre, collecte et échéances.':'Timings, war instructions, gathering and deadlines.',
+'Vérifier les consignes de guerre':'Check war instructions','Attaques, défense, territoire et règles particulières du jour.':'Attacks, defence, territory and any special rules for today.',
+'Faire le point avec les responsables R4':'Check in with R4 officers','Qui prend en charge quoi ? Qu’est-ce qui reste sans responsable ?':'Who is handling what? What still needs an owner?',
+'Transmettre les décisions et alertes au R5':'Send decisions and alerts to R5','Ne pas laisser une question importante sans retour.':'Do not leave an important question unanswered.',
+'Faire vivre FOS':'Keep FOS active','Un message utile, positif ou mobilisateur dans le chat.':'A useful, positive or motivating message in chat.',
+'Préparation AOW / adversaires':'AOW / opponent preparation','Vérifier les informations disponibles sur les adversaires':'Review available opponent information','Confirmer les éléments connus et leur fiabilité.':'Confirm known details and check their reliability.',
+'Faire le point NAP et diplomatie':'Review NAP and diplomacy','Qui contacte qui ? Respecter les consignes de la direction.':'Who contacts whom? Follow leadership instructions.',
+'Préparer les consignes pour mercredi':'Prepare Wednesday’s instructions','Responsables, horaires, règles et message à diffuser.':'Officers, timings, rules and message to share.',
+'AOW / coordination':'AOW / coordination','Confirmer les consignes et les rôles':'Confirm instructions and roles','S’assurer que les responsables ont relayé les informations.':'Make sure officers have passed on the information.',
+'Suivre les mouvements et les alertes':'Track movements and alerts','Faire remonter rapidement les problèmes au R5.':'Escalate issues to R5 quickly.',
+'Bilan et ajustements':'Review and adjustments','Vérifier les résultats et les points en attente':'Check results and outstanding items','Noter ce qui doit être corrigé ou anticipé.':'Note what needs correcting or preparing.',
+'Relancer les responsables R4':'Follow up with R4 officers','S’assurer que les actions annoncées ont été réalisées.':'Make sure agreed actions have been completed.',
+'Préparation du week-end':'Weekend preparation','Anticiper les événements et consignes du week-end':'Prepare weekend events and instructions','Horaires, présence des responsables et rappels.':'Timings, officer coverage and reminders.',
+'Contrôle week-end':'Weekend check','Vérifier les responsables de permanence':'Check duty officers','S’assurer que les consignes sont accessibles.':'Make sure instructions are available.',
+'Préparer la nouvelle semaine':'Prepare the new week','Lister les priorités de la semaine prochaine':'List next week’s priorities','AD, AOW, EE, NAP, effectifs et décisions à prendre.':'AD, AOW, EE, NAP, roster and decisions to make.',
+'Coordination générale / suivi des actions R4-R5':'Overall coordination / tracking R4-R5 actions',
+'Mission à confirmer avec Irina':'Assignment to confirm with Irina','Mission à confirmer avec Fear':'Assignment to confirm with Fear',
+'R5 à tour de rôle — coordination selon le planning':'Rotating R5 — coordination according to schedule','Mission à définir et à valider':'Assignment to define and confirm',
+'Modifier':'Edit','Supprimer':'Delete','Chaque responsable connaît sa mission':'Every officer knows their assignment','Chaque tâche a un responsable et une échéance':'Every task has an owner and a deadline','Absences et remplacements anticipés':'Absences and cover planned ahead','Les informations importantes remontent au R5':'Important information is passed up to R5',
+'Horaires et règles confirmés':'Timings and rules confirmed','Responsables désignés':'Officers assigned','Consignes relayées dans le jeu / Discord':'Instructions shared in game / Discord','NAP et restrictions vérifiés':'NAP and restrictions checked','Rappel de protection si nécessaire':'Shield reminder if needed','Bilan prévu après l’événement':'Post-event review planned',
+'Contact : ':'Contact: ','Du ':'From ','Date à préciser':'Date to confirm','Heure à préciser':'Time to confirm','terminé':'completed','Effacer les coches de cette journée ?':'Clear the checkmarks for this day?',
+'Renseigne le nom et la mission.':'Enter both a name and an assignment.','Indique le nom de l’alliance.':'Enter the alliance name.','Indique le nom de l’événement.':'Enter the event name.','Note enregistrée ✓':'Note saved ✓',
+
+'COMMAND CENTER':'CENTRE DE COMMANDEMENT','An alliance is led. It does not run itself.':'L’alliance se pilote. Elle ne s’improvise pas.',
+'AOW':'AOW','EE':'EE','AD':'AD','MEMBRES':'MEMBERS','CLASSEMENTS':'RANKINGS','TEAM':'ÉQUIPE','MEMBERS':'MEMBRES','RANKINGS':'CLASSEMENTS','WARS':'GUERRES',
+'Responsables R4 / R5':'R4 / R5 officers','Répartition des missions et suivi de la coordination.':'Mission allocation and coordination tracking.','Registre des membres':'Member register','Suivi manuel des membres FOS. Les données restent sur cet appareil.':'Manual FOS member tracking. Data stays on this device.','Nom du joueur':'Player name','PCO (facultatif)':'PCO (optional)','Actif':'Active','À suivre':'Needs follow-up','Absent':'Absent','En parcours':'In progress','Rôle / remarque (facultatif)':'Role / note (optional)','Ajouter le membre':'Add member','Suivi AOW':'AOW tracking','Préparation de l’adversaire, coordination, consignes et bilan. N’inscris que les informations confirmées.':'Opponent preparation, coordination, instructions and review. Enter confirmed information only.','Adversaire / opération':'Opponent / operation','Responsable':'Officer in charge','À préparer':'To prepare','Confirmé':'Confirmed','En cours':'In progress','Terminé':'Completed','Enregistrer AOW':'Save AOW','Historique AOW':'AOW history','Aucune opération enregistrée pour le moment.':'No operation recorded yet.','Checklist AOW':'AOW checklist','Adversaire et informations vérifiés':'Opponent and information checked','Règles et NAP confirmés':'Rules and NAP confirmed','Responsables et rôles désignés':'Officers and roles assigned','Consignes diffusées aux membres':'Instructions shared with members','Plan de suivi et bilan prévu':'Follow-up and review planned',
+'Suivi EE':'EE tracking','Préparation des équipes, horaires, présence et coordination.':'Team preparation, timings, attendance and coordination.','Nom de l’opération / adversaire':'Operation / opponent name','Enregistrer EE':'Save EE','Historique EE':'EE history','Checklist EE':'EE checklist','Horaires et règles EE confirmés':'EE timings and rules confirmed','Participants et équipes vérifiés':'Participants and teams checked','Transports et consignes relayés':'Transports and instructions shared','Protection hors ligne rappelée si nécessaire':'Offline shield reminder shared if needed','Bilan et résultats transmis':'Review and results shared',
+'Suivi AD':'AD tracking','Suivi des catégories, objectifs, résultats et récompenses.':'Track categories, goals, results and rewards.','Semaine / catégorie AD':'AD week / category','Objectif / points':'Goal / points','Résultat confirmé':'Result confirmed','Enregistrer AD':'Save AD','Historique AD':'AD history','Checklist AD':'AD checklist','Catégorie et règle de la semaine confirmées':'Weekly category and rules confirmed','Consigne push / économie communiquée':'Push / saving instructions shared','Objectif et critères de classement expliqués':'Goal and ranking criteria explained','Résultats vérifiés avant attribution':'Results checked before rewards','Récompenses et ajustements annoncés':'Rewards and adjustments announced',
+'Classements FOS':'FOS rankings','Saisie manuelle des résultats confirmés. Précise la période et la catégorie pour garder un historique clair.':'Manually enter confirmed results. Specify the period and category to keep a clear history.','Période (ex. semaine du 9 novembre)':'Period (e.g. week of November 9)','Activité générale':'General activity','Contribution FOS':'FOS contribution','Points / PCO':'Points / PCO','Remarque / récompense / catégorie…':'Note / reward / category…','Ajouter au classement':'Add to rankings','Résultats enregistrés':'Saved results','Aucun résultat enregistré.':'No results recorded.','Période non précisée':'Period not specified','Score non précisé':'Score not specified','Historique':'History','Supprimer cette entrée ?':'Delete this entry?','Indique le nom de l’opération.':'Enter the operation name.','Supprimer ce membre du registre ?':'Remove this member from the register?','Indique le nom du joueur.':'Enter the player name.','Indique la période du classement.':'Enter the ranking period.','Supprimer cette ligne du classement ?':'Delete this ranking entry?','Aucune opération enregistrée pour le moment.':'No operation recorded yet.',
+'CENTRE DE COMMANDEMENT':'COMMAND CENTER','L’alliance se pilote. Elle ne s’improvise pas.':'An alliance is led. It does not run itself.','Organisation • Coordination • Anticipation':'Organization • Coordination • Foresight','Checklist quotidienne':'Daily checklist','Lundi':'Monday','Mardi':'Tuesday','Mercredi':'Wednesday','Jeudi':'Thursday','Vendredi':'Friday','Samedi':'Saturday','Dimanche':'Sunday','terminé':'completed','Transmission au R5':'Report to R5','Décisions, alertes, membres à suivre…':'Decisions, alerts, members to follow…','Enregistrer':'Save','Réinitialiser cette journée':'Reset this day','Responsables R4 / R5':'R4 / R5 officers','Répartition des missions et suivi de la coordination.':'Task allocation and coordination tracking.','Ajouter un responsable':'Add an officer','Nom du membre':'Member name','Responsabilité / mission':'Responsibility / assignment','Ajouter':'Add','Contrôle d’équipe':'Team check','Registre des NAP':'NAP register','Enregistre les accords et les contacts. Les prises de contact restent soumises aux consignes de la direction.':'Record agreements and contacts. Contact must follow leadership instructions.','Alliance concernée':'Alliance concerned','Contact / responsable':'Contact / officer','À discuter':'To discuss','En attente':'Pending','Refusé':'Declined','Conditions, horaires, pré-collecte, restrictions…':'Conditions, timings, pre-collection, restrictions…','Enregistrer l’accord':'Save agreement','Préparation de l’adversaire, coordination, consignes et bilan. N’inscris que les informations confirmées.':'Opponent preparation, coordination, instructions and review. Enter confirmed information only.','Heure GT':'GT time','Adversaire, NAP, règles, objectifs, consignes de direction…':'Opponent, NAP, rules, goals, leadership instructions…','Checklist quotidienne':'Daily checklist','Saisie manuelle des résultats confirmés.':'Manually enter confirmed results.','Période à préciser':'Period to confirm','Événement ou opération':'Event or operation','Consignes, responsables, prises de villes, mines, bulle…':'Instructions, officers, city captures, mines, shield…','Ajouter au calendrier':'Add to calendar','Vérifications avant événement':'Pre-event checks','Données conservées dans ce navigateur':'Data stored in this browser'
+
+};
+
+// Additional interface coverage: static labels, checklists and dynamic record captions.
+Object.assign(translations,{
+'COMMAND — V3':'COMMAND — COMMAND CENTER',
+'GUERRES':'WARS','Routine quotidienne':'Daily routine','Lire les messages et annonces':'Read messages and announcements','Repérer les demandes importantes et les informations à relayer.':'Spot important requests and information to pass on.','Faire le point sur les membres':'Review alliance members','Activité, absences, nouveaux, difficultés ou besoins.':'Activity, absences, newcomers, issues or needs.','Vérifier les événements du jour':'Check today’s events','Horaires, consignes de guerre, collecte et échéances.':'Timings, war instructions, gathering and deadlines.','Vérifier les consignes de guerre':'Check war instructions','Attaques, défense, territoire et règles particulières du jour.':'Attacks, defence, territory and special rules for the day.','Faire le point avec les responsables R4':'Check in with R4 officers','Qui prend en charge quoi ? Qu’est-ce qui reste sans responsable ?':'Who is handling what? What still has no owner?','Transmettre les décisions et alertes au R5':'Pass decisions and alerts to R5','Ne pas laisser une question importante sans retour.':'Do not leave an important issue unanswered.','Faire vivre FOS':'Keep FOS active','Un message utile, positif ou mobilisateur dans le chat.':'A useful, positive or motivating message in chat.',
+'Préparation AOW / adversaires':'AOW / opponent preparation','Vérifier les informations disponibles sur les adversaires':'Check available information about opponents','Confirmer les éléments connus et leur fiabilité.':'Confirm known details and check their reliability.','Faire le point NAP et diplomatie':'Review NAP and diplomacy','Qui contacte qui ? Respecter les consignes de la direction.':'Who contacts whom? Follow leadership instructions.','Préparer les consignes pour mercredi':'Prepare Wednesday’s instructions','Responsables, horaires, règles et message à diffuser.':'Officers, timings, rules and message to share.','AOW / coordination':'AOW / coordination','Confirmer les consignes et les rôles':'Confirm instructions and roles','S’assurer que les responsables ont relayé les informations.':'Make sure officers have passed on the information.','Suivre les mouvements et les alertes':'Track movements and alerts','Faire remonter rapidement les problèmes au R5.':'Escalate issues to R5 quickly.','Bilan et ajustements':'Review and adjustments','Vérifier les résultats et les points en attente':'Check results and outstanding items','Noter ce qui doit être corrigé ou anticipé.':'Note what needs correcting or preparing.','Relancer les responsables R4':'Follow up with R4 officers','S’assurer que les actions annoncées ont été réalisées.':'Make sure agreed actions have been completed.','Préparation du week-end':'Weekend preparation','Anticiper les événements et consignes du week-end':'Prepare weekend events and instructions','Horaires, présence des responsables et rappels.':'Timings, officer coverage and reminders.','Contrôle week-end':'Weekend check','Vérifier les responsables de permanence':'Check duty officers','S’assurer que les consignes sont accessibles.':'Make sure instructions are available.','Préparer la nouvelle semaine':'Prepare the new week','Lister les priorités de la semaine prochaine':'List next week’s priorities','AD, AOW, EE, NAP, effectifs et décisions à prendre.':'AD, AOW, EE, NAP, roster and decisions to make.',
+'Rang':'Rank','Adversaire / opération':'Opponent / operation','Nom de l’opération / adversaire':'Operation / opponent name','Semaine / catégorie AD':'AD week / category','Objectif / points':'Goal / points','Équipes, transports, consignes, NAP, bulle, objectifs…':'Teams, transports, instructions, NAP, shield, goals…','Catégorie, consigne (push / coffres), classement, récompenses…':'Category, instructions (push / chests), ranking, rewards…','AD / AOW / EE calendar':'AD / AOW / EE calendar','Calendrier AD / AOW / EE':'AD / AOW / EE calendar','Ajoute uniquement les horaires et consignes confirmés.':'Only add confirmed timings and instructions.','Événement ou opération':'Event or operation','Dimension / territoire':'Dimension / territory','NAP / diplomatie':'NAP / diplomacy','Consignes, responsables, prises de villes, mines, bulle…':'Instructions, officers, city captures, mines, shield…','Ajouter au calendrier':'Add to calendar','Événements programmés':'Scheduled events','Vérifications avant événement':'Pre-event checks','Horaires et règles confirmés':'Timings and rules confirmed','Responsables désignés':'Officers assigned','Consignes relayées dans le jeu / Discord':'Instructions shared in game / Discord','NAP et restrictions vérifiés':'NAP and restrictions checked','Rappel de protection si nécessaire':'Shield reminder if needed','Bilan prévu après l’événement':'Post-event review planned',
+'Accords enregistrés':'Saved agreements','Contact : ':'Contact: ',' • Du ':' • From ',' au ':' to ','Date à préciser':'Date to confirm','Heure à préciser':'Time to confirm','Période non précisée':'Period not specified','Score non précisé':'Score not specified','PCO : ':'PCO: ','terminé':'completed','Terminé':'Completed','À préparer':'To prepare','Confirmé':'Confirmed','En cours':'In progress','Résultat confirmé':'Result confirmed','À discuter':'To discuss','En attente':'Pending','Actif':'Active','Absent':'Absent','À suivre':'Needs follow-up','En parcours':'In progress','Refusé':'Declined',
+'Langue':'Language','Nom':'Name','Mission':'Assignment','Nom du membre':'Member name','Responsabilité / mission':'Responsibility / assignment','Nom du joueur':'Player name','Rôle / remarque (facultatif)':'Role / note (optional)','Période (ex. semaine du 9 novembre)':'Period (e.g. week of November 9)','Remarque / récompense / catégorie…':'Note / reward / category…','Points / PCO':'Points / PCO','Ajouter au classement':'Add to rankings','Aucune opération enregistrée pour le moment.':'No operation recorded yet.','Aucun résultat enregistré.':'No results recorded.','Aucune opération enregistrée pour le moment.':'No operation recorded yet.','Données conservées dans ce navigateur':'Data stored in this browser','COMMAND • Application locale • Données conservées dans ce navigateur':'COMMAND • Local app • Data stored in this browser'
+});
+
+const reverse={}; for(const [fr,en] of Object.entries(translations)){if(fr!==en)reverse[en]=fr;}
+let lang=localStorage.getItem('fos-command-language')||'fr';
+// Keep the original French source for every text node and translatable attribute.
+// This prevents EN -> FR -> EN switching from translating already-translated text.
+const originalText=new WeakMap();
+const originalAttrs=new WeakMap();
+const attrNames=['placeholder','title','aria-label'];
+function translated(value){
+  let result=String(value);
+  const map=lang==='en'?translations:reverse;
+  // Translate phrases inside mixed text nodes too (for example contact + date + user data).
+  const entries=Object.entries(map).filter(([from,to])=>from && from!==to).sort((a,b)=>b[0].length-a[0].length);
+  for(const [from,to] of entries) result=result.split(from).join(to);
+  if(lang==='en')return result.replace(/(\d+\s*\/\s*\d+\s*)terminé/g,'$1completed');
+  return result.replace(/(\d+\s*\/\s*\d+\s*)completed/g,'$1terminé');
+}
+function translateNode(node){
+  if(node.nodeType===Node.TEXT_NODE){
+    if(!originalText.has(node))originalText.set(node,node.nodeValue);
+    const source=originalText.get(node);
+    const next=translated(source);
+    if(node.nodeValue!==next)node.nodeValue=next;
+    return;
+  }
+  if(node.nodeType!==Node.ELEMENT_NODE)return;
+  let saved=originalAttrs.get(node);
+  if(!saved){saved={};for(const attr of attrNames)saved[attr]=node.hasAttribute(attr)?node.getAttribute(attr):null;originalAttrs.set(node,saved);}
+  for(const attr of attrNames){
+    const source=saved[attr];
+    if(source===null)continue;
+    const next=translated(source);
+    if(node.getAttribute(attr)!==next)node.setAttribute(attr,next);
+  }
+  for(const child of node.childNodes)translateNode(child);
+}
+function translateString(value){return translated(value);}
+const nativeAlert=window.alert.bind(window),nativeConfirm=window.confirm.bind(window),nativePrompt=window.prompt.bind(window);
+window.alert=(message)=>nativeAlert(translateString(message));
+window.confirm=(message)=>nativeConfirm(translateString(message));
+window.prompt=(message,initial='')=>nativePrompt(translateString(message),initial);
+function applyLanguage(){
+  document.documentElement.lang=lang;
+  document.title=lang==='en'?'COMMAND — COMMAND CENTER':'COMMAND — V3.1';
+  translateNode(document.body);
+  const sel=document.getElementById('languageSelect');
+  if(sel){sel.value=lang;sel.setAttribute('aria-label',lang==='en'?'Language':'Langue');}
+}
+const selector=document.getElementById('languageSelect');
+selector.value=lang;
+selector.addEventListener('change',()=>{lang=selector.value;localStorage.setItem('fos-command-language',lang);applyLanguage();});
+// Watch dynamically-created checklists and saved records; each new node keeps its source text.
+const observer=new MutationObserver(records=>{
+  for(const rec of records)for(const node of rec.addedNodes)translateNode(node);
+});
+observer.observe(document.body,{childList:true,subtree:true});
+applyLanguage();
+})();
+</script>
+<script>
+// PWA: service worker for installation and offline shell.
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(err => console.warn('COMMAND offline setup:', err));
+  });
+}
+</script>
+</div></body></html>
